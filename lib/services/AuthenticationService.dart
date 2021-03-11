@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:pa8/models/User.dart';
+import 'package:pa8/services/DatabaseService.dart';
 abstract class AuthenticationService {
   static FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -9,7 +11,6 @@ abstract class AuthenticationService {
 
   static Future<void> signOut() async {
     await _firebaseAuth.signOut();
-    print("User signout !");
   }
 
   static Future<User> signInWithCredential(AuthCredential credential) async {
@@ -26,7 +27,7 @@ abstract class AuthenticationService {
       );
 
       final User user = await signInWithCredential(credential);
-      // await DatabaseService(userUid: user.uid).createUserData(UserData.extractDataFromFirebaseUser(user));
+      await DatabaseService(userUid: user.uid).createUserData(UserData.extractDataFromFirebaseUser(user));
       print("The user (from Google) is " + user.displayName);
     } catch (error) {
       print(error);

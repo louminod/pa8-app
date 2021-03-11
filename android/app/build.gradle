@@ -33,6 +33,7 @@ android {
         applicationId "com.efrei.pa8"
         minSdkVersion 16
         targetSdkVersion 30
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -48,6 +49,7 @@ android {
     dependencies {
         // Import the Firebase BoM
         implementation platform('com.google.firebase:firebase-bom:26.6.0')
+        implementation 'com.android.support:multidex:1.0.3'
 
         // Add the dependencies for the desired Firebase products
         // https://firebase.google.com/docs/android/setup#available-libraries

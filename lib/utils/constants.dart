@@ -5,4 +5,6 @@ abstract class Constants {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ];
+
+  static const DATABASE_USER = "userData";
 }
