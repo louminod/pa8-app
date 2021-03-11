@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "1079403880889",
+    "project_id": "po2bol",
+    "storage_bucket": "po2bol.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079403880889:android:16220637ba88d697369668",
+        "android_client_info": {
+          "package_name": "com.efrei.pa8"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1079403880889-ht0eedsgbg7t7puirigpug28qle5d5gn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.efrei.pa8",
+            "certificate_hash": "02eb21fd233b50f114ceeec1ce0b79807fdfa8d2"
+          }
+        },
+        {
+          "client_id": "1079403880889-at2jh9ell0rpsffi1oui7lm7ciphgaji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLnuMbrx8bGxEyaQP7KbqqJ2BtcTwshbo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1079403880889-at2jh9ell0rpsffi1oui7lm7ciphgaji.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1079403880889-8aqfairie92j10a8pqljd2se536h64ds.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "po2bol.po2bol"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079403880889:android:e28fd26d6e9cfb26369668",
+        "android_client_info": {
+          "package_name": "po2bol.po2bol"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1079403880889-khbcogt4fbigadarjoavoun0e45ur1ps.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "po2bol.po2bol",
+            "certificate_hash": "1a207fab9b7f371fef38e30af9f376ae2b70652b"
+          }
+        },
+        {
+          "client_id": "1079403880889-at2jh9ell0rpsffi1oui7lm7ciphgaji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLnuMbrx8bGxEyaQP7KbqqJ2BtcTwshbo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1079403880889-at2jh9ell0rpsffi1oui7lm7ciphgaji.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1079403880889-8aqfairie92j10a8pqljd2se536h64ds.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "po2bol.po2bol"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
