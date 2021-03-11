@@ -15,9 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           icon: const Icon(Icons.person_add),
           tooltip: 'Se connecter',
-          onPressed: () {
-
-          },
+          onPressed: () {},
         ),
       ]),
       floatingActionButton: FloatingActionButton(
