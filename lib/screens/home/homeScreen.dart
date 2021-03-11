@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pa8/screens/connection/connectionScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/homeScreen';
@@ -15,7 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           icon: const Icon(Icons.person_add),
           tooltip: 'Se connecter',
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ConnectionScreen()));
+          },
         ),
       ]),
       floatingActionButton: FloatingActionButton(
@@ -26,5 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.blue,
       ),
     );
+  }
+
+  Widget _actionAppBar() {
+
   }
 }
