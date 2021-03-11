@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pa8/routes/routes.dart';
 import 'package:pa8/screens/connection/connectionScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigator.pushNamed(context, Routes.analyse);
+          Navigator.pushNamed(context, Routes.analyse);
         },
         child: Icon(Icons.camera_alt),
         backgroundColor: Colors.blue,
