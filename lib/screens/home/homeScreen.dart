@@ -1,7 +1,11 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/routes/routes.dart';
+import 'package:pa8/screens/analyse/analyseScreen.dart';
 import 'package:pa8/services/AuthenticationService.dart';
+import 'package:pa8/widgets/Loading.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,19 +16,45 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  ImagePicker _picker;
+  bool loading;
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    _picker = ImagePicker();
+    loading = false;
+  }
+
+  @override
+  Widget build(BuildContext _context) {
     UserData user = Provider.of<UserData>(context);
 
-    return Scaffold(
-      appBar: AppBar(actions: <Widget>[_actionAppBar(user)]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, Routes.analyse);
-        },
-        child: Icon(Icons.camera_alt),
-        backgroundColor: Colors.blue,
-      ),
+    return FutureBuilder(
+      future: availableCameras(),
+      builder: (_context, snapshot) {
+        if (snapshot.hasData) {
+          return loading
+              ? LoadingScaffold()
+              : Scaffold(
+                  appBar: AppBar(actions: <Widget>[_actionAppBar(user)]),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: () async {
+                      setState(() {
+                        loading = true;
+                      });
+                      final pickedFile = await _picker.getImage(source: ImageSource.camera);
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_context) => AnalyseScreen(imagePath: pickedFile.path)));
+                    },
+                    child: Icon(Icons.camera_alt),
+                    backgroundColor: Colors.blue,
+                  ),
+                );
+        } else {
+          return LoadingScaffold();
+        }
+      },
     );
   }
 

@@ -1,0 +1,1 @@
+enum MoleType { BENIGN, MALIGNANT, UNKNOWN }

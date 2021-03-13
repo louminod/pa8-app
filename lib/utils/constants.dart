@@ -6,5 +6,7 @@ abstract class Constants {
     DeviceOrientation.portraitDown,
   ];
 
+  static const API_URL = "localhost:5000";
+
   static const DATABASE_USER = "userData";
 }

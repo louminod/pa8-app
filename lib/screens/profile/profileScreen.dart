@@ -14,7 +14,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext _context) {
     UserData user = Provider.of<UserData>(context);
 
     return user == null
@@ -28,7 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   tooltip: 'Se deconnecter',
                   onPressed: () async {
                     await AuthenticationService.signOut();
-                    Navigator.pushNamedAndRemoveUntil(context, Routes.home, (Route<dynamic> route) => false);
+                    Navigator.pushNamedAndRemoveUntil(_context, Routes.home, (Route<dynamic> route) => false);
                   },
                 ),
               ],
