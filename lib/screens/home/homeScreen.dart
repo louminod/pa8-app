@@ -34,27 +34,32 @@ class _HomeScreenState extends State<HomeScreen> {
       future: availableCameras(),
       builder: (_context, snapshot) {
         if (snapshot.hasData) {
-          return loading
-              ? LoadingScaffold()
-              : Scaffold(
-                  appBar: AppBar(actions: <Widget>[_actionAppBar(user)]),
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: () async {
-                      setState(() {
-                        loading = true;
-                      });
-                      final pickedFile = await _picker.getImage(source: ImageSource.camera);
-                      Navigator.push(
-                          context, MaterialPageRoute(builder: (_context) => AnalyseScreen(imagePath: pickedFile.path)));
-                    },
-                    child: Icon(Icons.camera_alt),
-                    backgroundColor: Colors.blue,
-                  ),
-                );
+          return loading ? LoadingScaffold() : _home(user);
         } else {
           return LoadingScaffold();
         }
       },
+    );
+  }
+
+  Widget _home(UserData user) {
+    return Scaffold(
+      appBar: AppBar(
+        title: user != null ? Text(user.userName) : null,
+        centerTitle: true,
+        actions: <Widget>[_actionAppBar(user)],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          setState(() {
+            loading = true;
+          });
+          final pickedFile = await _picker.getImage(source: ImageSource.camera);
+          Navigator.push(context, MaterialPageRoute(builder: (_context) => AnalyseScreen(imagePath: pickedFile.path)));
+        },
+        child: Icon(Icons.camera_alt),
+        backgroundColor: Colors.blue,
+      ),
     );
   }
 

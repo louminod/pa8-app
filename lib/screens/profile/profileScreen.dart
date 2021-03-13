@@ -21,7 +21,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ? LoadingScaffold()
         : Scaffold(
             appBar: AppBar(
-              title: Text(user.userName),
+              title: Text("Mon compte"),
+              centerTitle: true,
               actions: <Widget>[
                 IconButton(
                   icon: const Icon(Icons.logout),
