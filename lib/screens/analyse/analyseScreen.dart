@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/services/APIService.dart';
 import 'package:pa8/widgets/Error.dart';
@@ -26,9 +27,8 @@ class _AnalyseScreenState extends State<AnalyseScreen> {
       builder: (_context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
-            return Scaffold(
-              appBar: AppBar(),
-            );
+            Analyse analyse = snapshot.data;
+            return _showResults(_context, analyse);
           } else {
             return ErrorScaffold(text: "Analyse impossible");
           }
@@ -36,6 +36,51 @@ class _AnalyseScreenState extends State<AnalyseScreen> {
           return LoadingScaffold();
         }
       },
+    );
+  }
+
+  Widget _showResults(BuildContext _context, Analyse analyse) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.all(10),
+              child: Card(
+                elevation: 5,
+                child: Image.file(analyse.image),
+              ),
+            ),
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    analyse.moleType.toString().split(".")[1],
+                    style: TextStyle(color: Colors.grey, fontSize: 30),
+                  ),
+                  Text(
+                    "|",
+                    style: TextStyle(color: Colors.grey, fontSize: 30),
+                  ),
+                  Text(
+                    "${analyse.risk} %",
+                    style: TextStyle(color: Colors.grey, fontSize: 30),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          Navigator.pop(_context);
+        },
+        child: Icon(Icons.save),
+        backgroundColor: Colors.blue,
+      ),
     );
   }
 }

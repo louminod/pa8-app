@@ -20,7 +20,7 @@ class ErrorScaffold extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(_context, Routes.home, (Route<dynamic> route) => false);
                 },
-                child: Text("Acceuil"),
+                child: Text("Accueil"),
               ),
             ],
           ),

@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _home(UserData user) {
     return Scaffold(
       appBar: AppBar(
-        title: user != null ? Text(user.userName) : null,
+        title: user == null ? Text("PA8") : Text(user.userName),
         centerTitle: true,
         actions: <Widget>[_actionAppBar(user)],
       ),
@@ -55,7 +55,13 @@ class _HomeScreenState extends State<HomeScreen> {
             loading = true;
           });
           final pickedFile = await _picker.getImage(source: ImageSource.camera);
-          Navigator.push(context, MaterialPageRoute(builder: (_context) => AnalyseScreen(imagePath: pickedFile.path)));
+          if (pickedFile != null) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_context) => AnalyseScreen(imagePath: pickedFile.path)));
+          }
+          setState(() {
+            loading = false;
+          });
         },
         child: Icon(Icons.camera_alt),
         backgroundColor: Colors.blue,

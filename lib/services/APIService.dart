@@ -8,7 +8,7 @@ import 'package:pa8/utils/constants.dart';
 
 abstract class ApiService {
   static Future<dynamic> get() async {
-    final response = await http.get(Uri.http(Constants.API_URL, ""));
+    final response = await http.get(Uri.parse(Constants.API_URL));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -23,7 +23,7 @@ abstract class ApiService {
         "image": image.readAsBytesSync().toString(),
       };
 
-      final response = await http.post(Uri.http(Constants.API_URL, "/analyse"), body: body);
+      final response = await http.post(Uri.parse(Constants.API_URL + "analyse"), body: body);
       dynamic data;
       if (response.statusCode == 200) {
         data = json.decode(response.body)["data"];
@@ -32,7 +32,6 @@ abstract class ApiService {
       }
 
       Analyse analyse = new Analyse();
-      print(data);
       analyse.risk = data["risk"];
       switch (data["type"].toString().toUpperCase()) {
         case "BENIGN":
@@ -50,6 +49,7 @@ abstract class ApiService {
       }
       analyse.moleType = MoleType.BENIGN;
       analyse.date = DateTime.now();
+      analyse.image = image;
 
       return analyse;
     } catch (error) {
