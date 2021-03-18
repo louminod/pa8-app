@@ -24,12 +24,20 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # IOS
   cupertino_icons: ^1.0.2
-  firebase_auth: ^1.0.1
-  google_sign_in: ^5.0.0
+
+  # FIREBASE
   firebase_core: ^1.0.1
-  provider: ^5.0.0
+  firebase_auth: ^1.0.1
   cloud_firestore: ^1.0.1
+  firebase_storage: ^8.0.0
+
+  # GOOGLE
+  google_sign_in: ^5.0.0
+
+  # OTHERS
+  provider: ^5.0.0
   camera: ^0.8.0
   path_provider: ^2.0.1
   path: ^1.8.0

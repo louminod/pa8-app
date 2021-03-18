@@ -26,7 +26,7 @@ class LastAnalysesWidget extends StatelessWidget {
       ),
       child: ListView.builder(
         shrinkWrap: true,
-        itemCount: 10,
+        itemCount: _listAnalyses.length,
         itemBuilder: (_context, index) {
           Analyse analyse = _listAnalyses[0];
           return Container(

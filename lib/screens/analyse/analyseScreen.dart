@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
+import 'package:pa8/screens/analyse/saveScreen.dart';
 import 'package:pa8/services/APIService.dart';
 import 'package:pa8/widgets/Error.dart';
 import 'package:pa8/widgets/Loading.dart';
@@ -76,7 +77,7 @@ class _AnalyseScreenState extends State<AnalyseScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          Navigator.pop(_context);
+          Navigator.push(context, MaterialPageRoute(builder: (_context) => SaveScreen(analyse: analyse)));
         },
         child: Icon(Icons.save),
         backgroundColor: Colors.blue,
