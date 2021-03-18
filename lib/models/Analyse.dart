@@ -12,7 +12,7 @@ class Analyse {
   MoleType moleType;
   int risk;
 
-  Analyse();
+  Analyse({this.uid, this.imageUrl, this.image, this.date, this.moleType, this.risk});
 
   Analyse.fromFireStoreCollection(String uid, Map<String, dynamic> parsedJson) {
     try {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/services/AuthenticationService.dart';
 import 'package:pa8/services/DatabaseService.dart';
+import 'package:pa8/widgets/Loading.dart';
 import 'package:provider/provider.dart';
 
 abstract class Wrapper {
@@ -10,15 +11,19 @@ abstract class Wrapper {
     return StreamBuilder<User>(
       stream: AuthenticationService.userFirebase,
       builder: (context, AsyncSnapshot<User> userFirebaseSnapshot) {
-        String userUid = "";
-        if (userFirebaseSnapshot.hasData) {
-          userUid = userFirebaseSnapshot.data.uid;
+        if (userFirebaseSnapshot.connectionState == ConnectionState.active) {
+          String userUid = "";
+          if (userFirebaseSnapshot.hasData) {
+            userUid = userFirebaseSnapshot.data.uid;
+          }
+          return StreamProvider<UserData>.value(
+            value: DatabaseService(userUid: userUid).userData,
+            initialData: null,
+            child: page,
+          );
+        } else {
+          return LoadingScaffold();
         }
-        return StreamProvider<UserData>.value(
-          value: DatabaseService(userUid: userUid).userData,
-          initialData: null,
-          child: page,
-        );
       },
     );
   }

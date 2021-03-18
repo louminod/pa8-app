@@ -20,7 +20,7 @@ abstract class ApiService {
   static Future<Analyse> makeAnalyseOfImage(UserData user, File image) async {
     try {
       dynamic body = {
-        "image": image.readAsBytesSync().toString(),
+        "image": (await image.readAsBytes()).toString(),
       };
 
       final response = await http.post(Uri.parse(Constants.API_URL + "analyse"), body: body);

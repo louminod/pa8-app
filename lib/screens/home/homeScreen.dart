@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/routes/routes.dart';
 import 'package:pa8/screens/analyse/analyseScreen.dart';
+import 'package:pa8/screens/home/widgets/lastAnalyses.dart';
 import 'package:pa8/services/AuthenticationService.dart';
 import 'package:pa8/widgets/Loading.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: user == null ? Text("PA8") : Text(user.userName),
         centerTitle: true,
         actions: <Widget>[_actionAppBar(user)],
+      ),
+      body: Column(
+        children: [
+          LastAnalysesWidget(user),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

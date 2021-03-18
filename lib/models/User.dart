@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pa8/models/references/AccountType.dart';
 import 'package:pa8/models/references/UserType.dart';
 import 'package:pa8/tools/converter.dart';
 
@@ -8,6 +9,7 @@ class UserData {
   String email;
   String profilePicture;
   UserType userType;
+  AccountType accountType;
 
   UserData();
 
@@ -30,6 +32,7 @@ class UserData {
         this.email = parsedJson["email"];
         this.profilePicture = parsedJson["profilePicture"];
         this.userType = Converter.stringToUserType(parsedJson["userType"]);
+        this.accountType = Converter.stringToAccountType(parsedJson["accountType"]);
       } catch (error) {
         print("ERROR -> UserData.fromFireStoreCollection -> " + error.toString());
       }
@@ -43,6 +46,7 @@ class UserData {
         'email': this.email,
         'profilePicture': this.profilePicture,
         'userType': this.userType.toString(),
+        'accountType': this.accountType.toString(),
       };
     } catch (error) {
       print("ERROR -> UserData.toJson -> " + error.toString());
