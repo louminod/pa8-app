@@ -27,25 +27,30 @@ class AnalyseScreen extends StatelessWidget {
                 child: Image.file(File(analyse.imageUrl)),
               ),
             ),
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    analyse.moleType.toString().split(".")[1],
-                    style: TextStyle(color: Colors.grey, fontSize: 30),
-                  ),
-                  Text(
-                    "|",
-                    style: TextStyle(color: Colors.grey, fontSize: 30),
-                  ),
-                  Text(
-                    "${analyse.risk} %",
-                    style: TextStyle(color: Colors.grey, fontSize: 30),
-                  ),
-                ],
-              ),
-            )
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  analyse.moleType.toString().split(".")[1],
+                  style: TextStyle(color: Colors.grey, fontSize: 30),
+                ),
+                Text(
+                  "|",
+                  style: TextStyle(color: Colors.grey, fontSize: 30),
+                ),
+                Text(
+                  "${analyse.risk} %",
+                  style: TextStyle(color: Colors.grey, fontSize: 30),
+                ),
+              ],
+            ),
+            analyse.title != null
+                ? Text(
+                    analyse.title,
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  )
+                : null,
           ],
         ),
       ),
