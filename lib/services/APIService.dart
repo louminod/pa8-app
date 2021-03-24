@@ -49,7 +49,7 @@ abstract class ApiService {
       }
       analyse.moleType = MoleType.BENIGN;
       analyse.date = DateTime.now();
-      analyse.image = image;
+      analyse.imageUrl = image.path;
 
       return analyse;
     } catch (error) {

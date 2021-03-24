@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/routes/routes.dart';
-import 'package:pa8/screens/analyse/analyseScreen.dart';
+import 'package:pa8/screens/analyse/local/analyseMaker.dart';
 import 'package:pa8/screens/home/widgets/lastAnalyses.dart';
 import 'package:pa8/services/AuthenticationService.dart';
+import 'package:pa8/services/StorageService.dart';
 import 'package:pa8/widgets/Loading.dart';
 import 'package:provider/provider.dart';
 
@@ -52,26 +56,24 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          LastAnalysesWidget(user),
+          FutureBuilder(
+            future: user != null ? StorageService.loadFirebaseAnalyses() : StorageService.loadLocalAnalyses(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  List<Analyse> analyses = snapshot.data;
+                  return LastAnalysesWidget(user, analyses);
+                } else {
+                  return Container();
+                }
+              } else {
+                return LoadingWidget();
+              }
+            },
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          setState(() {
-            loading = true;
-          });
-          final pickedFile = await _picker.getImage(source: ImageSource.camera);
-          if (pickedFile != null) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (_context) => AnalyseScreen(imagePath: pickedFile.path)));
-          }
-          setState(() {
-            loading = false;
-          });
-        },
-        child: Icon(Icons.camera_alt),
-        backgroundColor: Colors.blue,
-      ),
+      floatingActionButton: _floatingAnalyseButton(user),
     );
   }
 
@@ -93,5 +95,25 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
     }
+  }
+
+  Widget _floatingAnalyseButton(UserData user) {
+    return FloatingActionButton(
+      onPressed: () async {
+        setState(() {
+          loading = true;
+        });
+        final pickedFile = await _picker.getImage(source: ImageSource.camera);
+        if (pickedFile != null) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_context) => AnalyseMaker(user: user, image: File(pickedFile.path))));
+        }
+        setState(() {
+          loading = false;
+        });
+      },
+      child: Icon(Icons.camera_alt),
+      backgroundColor: Colors.blue,
+    );
   }
 }

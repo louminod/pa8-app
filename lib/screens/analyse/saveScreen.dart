@@ -1,11 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:pa8/models/Analyse.dart';
+import 'package:pa8/models/User.dart';
 import 'package:pa8/routes/routes.dart';
+import 'package:pa8/services/StorageService.dart';
+import 'package:pa8/widgets/Loading.dart';
 
 class SaveScreen extends StatefulWidget {
   final Analyse analyse;
+  final UserData user;
 
-  const SaveScreen({Key key, this.analyse}) : super(key: key);
+  const SaveScreen({Key key, this.analyse, this.user}) : super(key: key);
 
   @override
   _SaveScreenState createState() => _SaveScreenState();
@@ -13,71 +19,121 @@ class SaveScreen extends StatefulWidget {
 
 class _SaveScreenState extends State<SaveScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool loading;
+
+  @override
+  void initState() {
+    super.initState();
+    loading = false;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: EdgeInsets.all(40),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                Card(
-                  child: Image.file(widget.analyse.image, height: MediaQuery.of(context).size.height / 2.5),
-                  elevation: 5,
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Titre',
+    return loading
+        ? LoadingScaffold()
+        : Scaffold(
+            body: Container(
+              margin: EdgeInsets.all(40),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      Card(
+                        child:
+                            Image.file(File(widget.analyse.imageUrl), height: MediaQuery.of(context).size.height / 2.5),
+                        elevation: 5,
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            widget.analyse.moleType.toString().split(".")[1],
+                            style: TextStyle(color: Colors.grey, fontSize: 20),
+                          ),
+                          Text(
+                            "|",
+                            style: TextStyle(color: Colors.grey, fontSize: 20),
+                          ),
+                          Text(
+                            "${widget.analyse.risk} %",
+                            style: TextStyle(color: Colors.grey, fontSize: 20),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "${widget.analyse.date.toString().split(".")[0]}",
+                        style: TextStyle(color: Colors.grey, fontSize: 15),
+                      ),
+                      SizedBox(height: 5),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Titre *',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Le titre ne peut être vide';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          widget.analyse.title = value;
+                        },
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Note',
+                        ),
+                        minLines: 2,
+                        maxLines: 5,
+                        onChanged: (value) {
+                          widget.analyse.description = value;
+                        },
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (_formKey.currentState.validate()) {
+                                setState(() {
+                                  loading = true;
+                                });
+
+                                if (widget.user != null) {
+                                } else {
+                                  await StorageService.saveAnalyseLocally(widget.analyse);
+                                }
+
+                                setState(() {
+                                  loading = false;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text('Analyse sauvegardée !'),
+                                  duration: Duration(seconds: 1),
+                                ));
+                                Navigator.pushNamedAndRemoveUntil(context, Routes.home, (Route<dynamic> route) => false);
+                              }
+                            },
+                            child: Text('Valider'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamedAndRemoveUntil(context, Routes.home, (Route<dynamic> route) => false);
+                            },
+                            style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.redAccent)),
+                            child: Text('Annuler'),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Le titre ne peut être vide';
-                    }
-                    return null;
-                  },
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Note',
-                  ),
-                  minLines: 2,
-                  maxLines: 5,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Le titre ne peut être vide';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Processing Data')));
-                        }
-                      },
-                      child: Text('Valider'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(context, Routes.home, (Route<dynamic> route) => false);
-                      },
-                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.redAccent)),
-                      child: Text('Annuler'),
-                    ),
-                  ],
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 }

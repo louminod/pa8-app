@@ -4,43 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/screens/analyse/saveScreen.dart';
-import 'package:pa8/services/APIService.dart';
-import 'package:pa8/widgets/Error.dart';
-import 'package:pa8/widgets/Loading.dart';
 
-class AnalyseScreen extends StatefulWidget {
+class AnalyseScreen extends StatelessWidget {
   static const String routeName = '/analyseScreen';
 
-  final String imagePath;
+  final Analyse analyse;
   final UserData user;
 
-  const AnalyseScreen({Key key, this.imagePath, this.user}) : super(key: key);
+  const AnalyseScreen({Key key, this.analyse, this.user}) : super(key: key);
 
-  @override
-  _AnalyseScreenState createState() => _AnalyseScreenState();
-}
-
-class _AnalyseScreenState extends State<AnalyseScreen> {
   @override
   Widget build(BuildContext _context) {
-    return FutureBuilder(
-      future: ApiService.makeAnalyseOfImage(widget.user, File(widget.imagePath)),
-      builder: (_context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            Analyse analyse = snapshot.data;
-            return _showResults(_context, analyse);
-          } else {
-            return ErrorScaffold(text: "Analyse impossible");
-          }
-        } else {
-          return LoadingScaffold();
-        }
-      },
-    );
-  }
-
-  Widget _showResults(BuildContext _context, Analyse analyse) {
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -50,7 +24,7 @@ class _AnalyseScreenState extends State<AnalyseScreen> {
               margin: EdgeInsets.all(10),
               child: Card(
                 elevation: 5,
-                child: Image.file(analyse.image),
+                child: Image.file(File(analyse.imageUrl)),
               ),
             ),
             Container(
@@ -77,7 +51,15 @@ class _AnalyseScreenState extends State<AnalyseScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          Navigator.push(context, MaterialPageRoute(builder: (_context) => SaveScreen(analyse: analyse)));
+          Navigator.push(
+            _context,
+            MaterialPageRoute(
+              builder: (_context) => SaveScreen(
+                analyse: analyse,
+                user: user,
+              ),
+            ),
+          );
         },
         child: Icon(Icons.save),
         backgroundColor: Colors.blue,

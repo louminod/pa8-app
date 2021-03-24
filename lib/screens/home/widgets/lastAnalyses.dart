@@ -1,22 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
-import 'package:pa8/models/references/MoleType.dart';
+import 'package:pa8/screens/analyse/analyseScreen.dart';
 
 class LastAnalysesWidget extends StatelessWidget {
   final UserData user;
+  final List<Analyse> analyses;
 
-  LastAnalysesWidget(this.user);
-
-  final List<Analyse> _listAnalyses = [
-    new Analyse(
-      moleType: MoleType.BENIGN,
-      risk: 45,
-      date: DateTime.now(),
-      imageUrl:
-          "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.futura-sciences.com%2Fbuildsv6%2Fimages%2Fwide1920%2F3%2F0%2F3%2F3030e3c89f_134019_canonique-naevus.jpg&f=1&nofb=1",
-    ),
-  ];
+  LastAnalysesWidget(this.user, this.analyses);
 
   @override
   Widget build(BuildContext _context) {
@@ -26,19 +19,25 @@ class LastAnalysesWidget extends StatelessWidget {
       ),
       child: ListView.builder(
         shrinkWrap: true,
-        itemCount: _listAnalyses.length,
+        itemCount: analyses.length,
         itemBuilder: (_context, index) {
-          Analyse analyse = _listAnalyses[0];
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            child: Card(
-              elevation: 5,
-              child: Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: ListTile(
-                  leading: user == null ? Image.network(analyse.imageUrl) : Image.network(analyse.imageUrl),
-                  title: Text('${analyse.date}'),
-                  subtitle: Text("${analyse.moleType.toString().split('.')[1]} | ${analyse.risk} %"),
+          Analyse analyse = analyses[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  _context, MaterialPageRoute(builder: (_context) => AnalyseScreen(analyse: analyse, user: user)));
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+              child: Card(
+                elevation: 5,
+                child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 5),
+                  child: ListTile(
+                    leading: user == null ? Image.file(File(analyse.imageUrl)) : Image.network(analyse.imageUrl),
+                    title: Text('${analyse.date}'),
+                    subtitle: Text("${analyse.moleType.toString().split('.')[1]} | ${analyse.risk} %"),
+                  ),
                 ),
               ),
             ),
