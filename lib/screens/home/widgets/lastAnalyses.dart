@@ -35,8 +35,15 @@ class LastAnalysesWidget extends StatelessWidget {
                   margin: EdgeInsets.symmetric(vertical: 5),
                   child: ListTile(
                     leading: user == null ? Image.file(File(analyse.imageUrl)) : Image.network(analyse.imageUrl),
-                    title: Text('${analyse.date}'),
-                    subtitle: Text("${analyse.moleType.toString().split('.')[1]} | ${analyse.risk} %"),
+                    title: Text(analyse.title),
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${analyse.date}'),
+                        Text("${analyse.moleType.toString().split('.')[1]} | ${analyse.risk} %"),
+                      ],
+                    ),
                   ),
                 ),
               ),

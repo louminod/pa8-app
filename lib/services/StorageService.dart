@@ -45,6 +45,12 @@ abstract class StorageService {
     Database db = await _storageLocal.openDatabase(appDocDirectory.path + "/pa8");
     var store = StoreRef.main();
 
+    List<Analyse> localAnalyses = await loadLocalAnalyses();
+    localAnalyses.sort((a, b) => a.date.compareTo(b.date));
+    if (localAnalyses.length == 5) {
+      await store.record(localAnalyses[0].uid).delete(db);
+    }
+
     analyse.uid = Uuid().v4();
     await store.record(analyse.uid).put(db, analyse.toJson());
   }
@@ -53,12 +59,27 @@ abstract class StorageService {
     Directory appDocDirectory = await getApplicationDocumentsDirectory();
     Database db = await _storageLocal.openDatabase(appDocDirectory.path + "/pa8");
     var store = StoreRef.main();
+
     List<RecordSnapshot<dynamic, dynamic>> records = await store.find(db);
     List<Analyse> analyses = [];
     records.forEach((element) async {
       analyses.add(Analyse.fromJson(element.value));
     });
+    analyses.sort((a, b) => b.date.compareTo(a.date));
     return analyses;
+  }
+
+  static Future cleanLocalStorage() async {
+    Directory appDocDirectory = await getApplicationDocumentsDirectory();
+    Database db = await _storageLocal.openDatabase(appDocDirectory.path + "/pa8");
+    var store = StoreRef.main();
+
+    List<Analyse> localAnalyses = await loadLocalAnalyses();
+    List<String> keys = [];
+
+    localAnalyses.forEach((element) => keys.add(element.uid));
+
+    return store.records(keys).delete(db);
   }
 
   static Future<List<Analyse>> loadFirebaseAnalyses() async {

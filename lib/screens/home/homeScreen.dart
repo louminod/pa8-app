@@ -9,6 +9,7 @@ import 'package:pa8/routes/routes.dart';
 import 'package:pa8/screens/analyse/local/analyseMaker.dart';
 import 'package:pa8/screens/home/widgets/lastAnalyses.dart';
 import 'package:pa8/services/AuthenticationService.dart';
+import 'package:pa8/services/DatabaseService.dart';
 import 'package:pa8/services/StorageService.dart';
 import 'package:pa8/widgets/Loading.dart';
 import 'package:provider/provider.dart';
