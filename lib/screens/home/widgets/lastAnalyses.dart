@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/screens/analyse/analyseScreen.dart';
+import 'package:pa8/tools/formater.dart';
 
 class LastAnalysesWidget extends StatelessWidget {
   final UserData user;
@@ -40,7 +41,7 @@ class LastAnalysesWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${analyse.date}'),
+                        Text(Formater.formatDateTime(analyse.date)),
                         Text("${analyse.moleType.toString().split('.')[1]} | ${analyse.risk} %"),
                       ],
                     ),
