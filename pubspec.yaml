@@ -44,9 +44,12 @@ dependencies:
   image_picker: ^0.7.2+1
   sembast: ^3.0.0+4
   uuid: ^3.0.1
+  date_time_picker: ^2.0.0
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
 # For information on the generic Dart part of this file, see the

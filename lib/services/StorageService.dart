@@ -2,11 +2,6 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:pa8/models/Analyse.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:sembast/sembast.dart';
-import 'package:sembast/sembast_io.dart';
-import 'package:uuid/uuid.dart';
 
 abstract class StorageService {
   static firebase_storage.FirebaseStorage _storageFirebase = firebase_storage.FirebaseStorage.instance;

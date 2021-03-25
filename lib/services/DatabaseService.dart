@@ -80,6 +80,18 @@ class DatabaseService {
     return null;
   }
 
+  Future<void> updateAnalyse(Analyse analyse) async {
+    if (this.userUid == "") {
+      Directory appDocDirectory = await getApplicationDocumentsDirectory();
+      Database db = await _storageLocal.openDatabase(appDocDirectory.path + "/pa8");
+      var store = StoreRef.main();
+
+      await store.record(analyse.uid).update(db, analyse.toJson());
+    } else {}
+
+    return null;
+  }
+
   Future<void> deleteAnalyse(Analyse analyse) async {
     await _deleteLocalAnalyse(analyse);
   }

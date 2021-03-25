@@ -1,12 +1,13 @@
 import 'dart:io';
+import 'package:intl/date_symbol_data_local.dart';
 
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/routes/routes.dart';
 import 'package:pa8/screens/analyse/saveScreen.dart';
 import 'package:pa8/services/DatabaseService.dart';
-import 'package:pa8/services/StorageService.dart';
 
 class AnalyseScreen extends StatelessWidget {
   static const String routeName = '/analyseScreen';
@@ -20,17 +21,23 @@ class AnalyseScreen extends StatelessWidget {
   Widget build(BuildContext _context) {
     return Scaffold(
       appBar: AppBar(
-        actions: analyse.title == null
-            ? []
-            : [
-                IconButton(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.alarm),
+            onPressed: () async {
+              _reminderModal(_context);
+            },
+          ),
+          analyse.title == null
+              ? Container()
+              : IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () async {
                     await DatabaseService(userUid: user == null ? "" : user.uid).deleteAnalyse(analyse);
                     Navigator.pushNamedAndRemoveUntil(_context, Routes.home, (Route<dynamic> route) => false);
                   },
                 ),
-              ],
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -86,5 +93,55 @@ class AnalyseScreen extends StatelessWidget {
         backgroundColor: Colors.blue,
       ),
     );
+  }
+
+  _reminderModal(BuildContext context) {
+    initializeDateFormatting();
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          DateTime selectedDate;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.all(20),
+                child: Text(
+                  "Définir un rappel",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 20, right: 20, bottom: 30),
+                child: DateTimePicker(
+                  type: DateTimePickerType.dateTimeSeparate,
+                  dateMask: 'd MMM, yyyy',
+                  initialValue: analyse.reminder == null ? DateTime.now().toString() : analyse.reminder.toString(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2100),
+                  icon: Icon(Icons.event),
+                  dateLabelText: 'Date',
+                  timeLabelText: "Hour",
+                  locale: Locale('fr', 'FR'),
+                  onChanged: (val) {
+                    selectedDate = DateTime.parse(val);
+                  },
+                  onSaved: (val) => print(val),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 20),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    analyse.reminder = selectedDate;
+                    await DatabaseService(userUid: user == null ? "" : user.uid).updateAnalyse(analyse);
+                    Navigator.pop(context);
+                  },
+                  child: Text("Valider"),
+                ),
+              )
+            ],
+          );
+        });
   }
 }

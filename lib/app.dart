@@ -6,6 +6,7 @@ import 'package:pa8/screens/home/homeScreen.dart';
 import 'package:pa8/screens/profile/profileScreen.dart';
 import 'package:pa8/tools/wrapper.dart';
 import 'package:pa8/utils/constants.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class App extends StatelessWidget {
   @override
@@ -16,6 +17,12 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: _routes(context),
       home: Wrapper.userDataWrapper(HomeScreen()),
+      localizationsDelegates: [
+        GlobalWidgetsLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [Locale('fr', 'FR')],
     );
   }
 

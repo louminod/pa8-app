@@ -10,8 +10,9 @@ class Analyse {
   int risk;
   String title;
   String description;
+  DateTime reminder;
 
-  Analyse({this.uid, this.imageUrl, this.date, this.moleType, this.risk,this.title,this.description});
+  Analyse();
 
   Analyse.fromFireStoreCollection(String uid, Map<String, dynamic> parsedJson) {
     try {
@@ -22,6 +23,7 @@ class Analyse {
       this.risk = parsedJson["risk"];
       this.title = parsedJson["title"];
       this.description = parsedJson["description"];
+      this.reminder = parsedJson["reminder"] != null ? (parsedJson["reminder"] as Timestamp).toDate() : null;
     } catch (error) {
       print("Error -> Analyse.fromFireStoreCollection -> " + error.toString());
     }
@@ -36,6 +38,7 @@ class Analyse {
       this.risk = parsedJson["risk"];
       this.title = parsedJson["title"];
       this.description = parsedJson["description"];
+      this.reminder = parsedJson["reminder"] != null ? DateTime.parse(parsedJson["reminder"]) : null;
     } catch (error) {
       print("Error -> Analyse.fromJson -> " + error.toString());
     }
@@ -49,5 +52,6 @@ class Analyse {
         'risk': this.risk,
         'title': this.title,
         'description': this.description,
+        'reminder': this.reminder.toString(),
       };
 }
