@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/routes/routes.dart';
+import 'package:pa8/services/DatabaseService.dart';
 import 'package:pa8/services/StorageService.dart';
 import 'package:pa8/widgets/Loading.dart';
 
@@ -72,6 +73,7 @@ class _SaveScreenState extends State<SaveScreen> {
                         decoration: const InputDecoration(
                           labelText: 'Titre *',
                         ),
+                        initialValue: widget.analyse.title,
                         validator: (value) {
                           if (value.isEmpty) {
                             return 'Le titre ne peut être vide';
@@ -86,6 +88,7 @@ class _SaveScreenState extends State<SaveScreen> {
                         decoration: const InputDecoration(
                           labelText: 'Note',
                         ),
+                        initialValue: widget.analyse.description,
                         minLines: 2,
                         maxLines: 5,
                         onChanged: (value) {
@@ -104,8 +107,10 @@ class _SaveScreenState extends State<SaveScreen> {
                                 });
 
                                 if (widget.user != null) {
+                                  // TODO save to firebase
                                 } else {
-                                  await StorageService.saveAnalyseLocally(widget.analyse);
+                                  await DatabaseService(userUid: widget.user == null ? "" : widget.user.uid)
+                                      .saveAnalyse(widget.analyse);
                                 }
 
                                 setState(() {
@@ -115,7 +120,8 @@ class _SaveScreenState extends State<SaveScreen> {
                                   content: Text('Analyse sauvegardée !'),
                                   duration: Duration(seconds: 1),
                                 ));
-                                Navigator.pushNamedAndRemoveUntil(context, Routes.home, (Route<dynamic> route) => false);
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, Routes.home, (Route<dynamic> route) => false);
                               }
                             },
                             child: Text('Valider'),

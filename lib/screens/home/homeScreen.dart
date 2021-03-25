@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pa8/models/Analyse.dart';
@@ -35,17 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext _context) {
     UserData user = Provider.of<UserData>(context);
-
-    return FutureBuilder(
-      future: availableCameras(),
-      builder: (_context, snapshot) {
-        if (snapshot.hasData) {
-          return loading ? LoadingScaffold() : _home(user);
-        } else {
-          return LoadingScaffold();
-        }
-      },
-    );
+    return loading ? LoadingScaffold() : _home(user);
   }
 
   Widget _home(UserData user) {
@@ -58,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           FutureBuilder(
-            future: user != null ? StorageService.loadFirebaseAnalyses() : StorageService.loadLocalAnalyses(),
+            future: DatabaseService(userUid: user == null ? "" : user.uid).analyses,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
