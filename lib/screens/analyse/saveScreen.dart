@@ -10,9 +10,10 @@ import 'package:pa8/widgets/Loading.dart';
 
 class SaveScreen extends StatefulWidget {
   final Analyse analyse;
+  final Analyse lastAnalyse;
   final UserData user;
 
-  const SaveScreen({Key key, this.analyse, this.user}) : super(key: key);
+  const SaveScreen({Key key, this.analyse, this.user, this.lastAnalyse}) : super(key: key);
 
   @override
   _SaveScreenState createState() => _SaveScreenState();
@@ -106,12 +107,14 @@ class _SaveScreenState extends State<SaveScreen> {
                                   loading = true;
                                 });
 
-                                if (widget.user != null) {
-                                  // TODO save to firebase
-                                } else {
+                                if (widget.lastAnalyse != null) {
+                                  widget.lastAnalyse.reminder = null;
                                   await DatabaseService(userUid: widget.user == null ? "" : widget.user.uid)
-                                      .saveAnalyse(widget.analyse);
+                                      .updateAnalyse(widget.lastAnalyse);
                                 }
+
+                                await DatabaseService(userUid: widget.user == null ? "" : widget.user.uid)
+                                    .saveAnalyse(widget.analyse);
 
                                 setState(() {
                                   loading = false;

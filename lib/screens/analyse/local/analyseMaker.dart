@@ -9,10 +9,11 @@ import 'package:pa8/widgets/Error.dart';
 import 'package:pa8/widgets/Loading.dart';
 
 class AnalyseMaker extends StatelessWidget {
+  final Analyse lastAnalyse;
   final UserData user;
   final File image;
 
-  const AnalyseMaker({Key key, this.user, this.image}) : super(key: key);
+  const AnalyseMaker({Key key, this.user, this.image, this.lastAnalyse}) : super(key: key);
 
   @override
   Widget build(BuildContext _context) {
@@ -22,7 +23,7 @@ class AnalyseMaker extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
             Analyse analyse = snapshot.data;
-            return AnalyseScreen(analyse: analyse, user: user);
+            return AnalyseScreen(analyse: analyse, user: user, lastAnalyse: lastAnalyse);
           } else {
             return ErrorScaffold(text: "Analyse impossible");
           }

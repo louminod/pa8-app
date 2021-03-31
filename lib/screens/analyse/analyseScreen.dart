@@ -12,10 +12,11 @@ import 'package:pa8/services/DatabaseService.dart';
 class AnalyseScreen extends StatelessWidget {
   static const String routeName = '/analyseScreen';
 
+  final Analyse lastAnalyse;
   final Analyse analyse;
   final UserData user;
 
-  const AnalyseScreen({Key key, this.analyse, this.user}) : super(key: key);
+  const AnalyseScreen({Key key, this.analyse, this.user, this.lastAnalyse}) : super(key: key);
 
   @override
   Widget build(BuildContext _context) {
@@ -134,7 +135,9 @@ class AnalyseScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () async {
                     analyse.reminder = selectedDate;
-                    await DatabaseService(userUid: user == null ? "" : user.uid).updateAnalyse(analyse);
+                    if (analyse.uid != null) {
+                      await DatabaseService(userUid: user == null ? "" : user.uid).updateAnalyse(analyse);
+                    }
                     Navigator.pop(context);
                   },
                   child: Text("Valider"),

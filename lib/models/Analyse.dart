@@ -40,14 +40,16 @@ class Analyse {
       this.description = parsedJson["description"];
       this.reminder = parsedJson["reminder"] != null ? DateTime.parse(parsedJson["reminder"]) : null;
     } catch (error) {
-      print("Error -> Analyse.fromJson -> " + error.toString());
+      if (!error.toString().contains("FormatException: Invalid date format")) {
+        print("Error -> Analyse.fromJson -> " + error.toString());
+      }
     }
   }
 
   Map<String, dynamic> toJson() => {
         'uid': this.uid,
         'imageUrl': this.imageUrl,
-        'date': this.date.toString(),
+        'date': this.date.toIso8601String(),
         'moleType': this.moleType.toString(),
         'risk': this.risk,
         'title': this.title,

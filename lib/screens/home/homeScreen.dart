@@ -6,7 +6,8 @@ import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/routes/routes.dart';
 import 'package:pa8/screens/analyse/local/analyseMaker.dart';
-import 'package:pa8/screens/home/widgets/lastAnalyses.dart';
+import 'package:pa8/screens/home/widgets/lastAnalysesWidget.dart';
+import 'package:pa8/screens/home/widgets/reminderWidget.dart';
 import 'package:pa8/services/AuthenticationService.dart';
 import 'package:pa8/services/DatabaseService.dart';
 import 'package:pa8/services/StorageService.dart';
@@ -38,32 +39,29 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _home(UserData user) {
-    return Scaffold(
-      appBar: AppBar(
-        title: user == null ? Text("PA8") : Text(user.userName),
-        centerTitle: true,
-        actions: <Widget>[_actionAppBar(user)],
-      ),
-      body: Column(
-        children: [
-          FutureBuilder(
-            future: DatabaseService(userUid: user == null ? "" : user.uid).analyses,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  List<Analyse> analyses = snapshot.data;
-                  return LastAnalysesWidget(user, analyses);
-                } else {
-                  return Container();
-                }
-              } else {
-                return LoadingWidget();
-              }
-            },
-          ),
-        ],
-      ),
-      floatingActionButton: _floatingAnalyseButton(user),
+    return FutureBuilder(
+      future: DatabaseService(userUid: user == null ? "" : user.uid).analyses,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          List<Analyse> analyses = snapshot.data;
+          return Scaffold(
+            appBar: AppBar(
+              title: user == null ? Text("PA8") : Text(user.userName),
+              centerTitle: true,
+              actions: <Widget>[_actionAppBar(user)],
+            ),
+            body: Column(
+              children: [
+                ReminderWidget(user, analyses, _picker),
+                LastAnalysesWidget(user, analyses),
+              ],
+            ),
+            floatingActionButton: _floatingAnalyseButton(user),
+          );
+        } else {
+          return LoadingWidget();
+        }
+      },
     );
   }
 
@@ -95,8 +93,13 @@ class _HomeScreenState extends State<HomeScreen> {
         });
         final pickedFile = await _picker.getImage(source: ImageSource.camera);
         if (pickedFile != null) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (_context) => AnalyseMaker(user: user, image: File(pickedFile.path))));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_context) => AnalyseMaker(
+                        user: user,
+                        image: File(pickedFile.path),
+                      )));
         }
         setState(() {
           loading = false;
