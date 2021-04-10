@@ -18,14 +18,16 @@ class Analyse {
     try {
       this.uid = uid;
       this.imageUrl = parsedJson["imageUrl"];
-      this.date = (parsedJson["date"] as Timestamp).toDate();
+      this.date = DateTime.parse(parsedJson["date"]);
       this.moleType = Converter.stringToMoleType(parsedJson["moleType"]);
       this.risk = parsedJson["risk"];
       this.title = parsedJson["title"];
       this.description = parsedJson["description"];
       this.reminder = parsedJson["reminder"] != null ? (parsedJson["reminder"] as Timestamp).toDate() : null;
     } catch (error) {
-      print("Error -> Analyse.fromFireStoreCollection -> " + error.toString());
+      if (!error.toString().contains("FormatException: Invalid date format")) {
+        print("Error -> Analyse.fromJson -> " + error.toString());
+      }
     }
   }
 
@@ -40,7 +42,7 @@ class Analyse {
       this.description = parsedJson["description"];
       this.reminder = parsedJson["reminder"] != null ? DateTime.parse(parsedJson["reminder"]) : null;
     } catch (error) {
-      if (!error.toString().contains("FormatException: Invalid date format")) {
+      if (!error.toString().contains("Invalid date format")) {
         print("Error -> Analyse.fromJson -> " + error.toString());
       }
     }
@@ -54,6 +56,6 @@ class Analyse {
         'risk': this.risk,
         'title': this.title,
         'description': this.description,
-        'reminder': this.reminder.toString(),
+        'reminder': this.reminder != null ? this.reminder.toString() : null,
       };
 }

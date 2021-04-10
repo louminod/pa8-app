@@ -28,7 +28,7 @@ abstract class AuthenticationService {
 
       final User user = await signInWithCredential(credential);
       await DatabaseService(userUid: user.uid).createUserData(UserData.extractDataFromFirebaseUser(user));
-      print("The user (from Google) is " + user.displayName);
+      await DatabaseService(userUid: user.uid).syncDatabases();
     } catch (error) {
       print(error);
     }

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
+import 'package:pa8/services/StorageService.dart';
+import 'package:pa8/services/references/DatabasePath.dart';
 import 'package:pa8/utils/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
@@ -52,48 +54,54 @@ class DatabaseService {
 
   // ANALYSES
 
-  Future<List<Analyse>> get analyses async {
-    if (this.userUid == "") {
+  Future<List<Analyse>> get analysesFuture async {
       return _loadLocalAnalyses();
-    } else {
-      /*QuerySnapshot q = await _usersDataCollection.doc(userUid).collection(DatabasePath.userBookings).get();
-      Booking last;
-      q.docs.forEach((element) {
-        Booking booking = new Booking.fromFireStoreCollection(element.id, element.data());
-        if (last == null) {
-          last = booking;
-        } else if (booking.bookingTimeSlot.start.compareTo(last.bookingTimeSlot.start) == 1) {
-          last = booking;
-        }
-      });
-      return last;
-
-       */
-    }
   }
 
-  Future<void> saveAnalyse(Analyse analyse) {
-    if (this.userUid == "") {
-      _saveAnalyseLocally(analyse);
-    } else {}
+  Stream<List<Analyse>> get analysesStream => _usersDataCollection
+      .doc(userUid)
+      .collection(DatabasePath.usersAnalyses)
+      .snapshots()
+      .map((snapshot) => snapshot.docs.map((doc) => Analyse.fromFireStoreCollection(doc.id, doc.data())).toList());
 
+  Future<void> saveAnalyse(Analyse analyse) async {
+    _saveAnalyseLocally(analyse);
+    if (this.userUid != "") {
+      _saveAnalyseFirebase(analyse);
+    }
     return null;
   }
 
   Future<void> updateAnalyse(Analyse analyse) async {
-    if (this.userUid == "") {
-      Directory appDocDirectory = await getApplicationDocumentsDirectory();
-      Database db = await _storageLocal.openDatabase(appDocDirectory.path + "/pa8");
-      var store = StoreRef.main();
+    Directory appDocDirectory = await getApplicationDocumentsDirectory();
+    Database db = await _storageLocal.openDatabase(appDocDirectory.path + "/pa8");
+    var store = StoreRef.main();
 
-      await store.record(analyse.uid).update(db, analyse.toJson());
-    } else {}
+    await store.record(analyse.uid).update(db, analyse.toJson());
+    if (this.userUid != "") {
+      try {
+        _usersDataCollection
+            .doc(userUid)
+            .collection(DatabasePath.usersAnalyses)
+            .doc(analyse.uid)
+            .update(analyse.toJson());
+      } catch (error) {
+        print(error.toString());
+      }
+    }
 
     return null;
   }
 
   Future<void> deleteAnalyse(Analyse analyse) async {
     await _deleteLocalAnalyse(analyse);
+    if (this.userUid != "") {
+      try {
+        _usersDataCollection.doc(userUid).collection(DatabasePath.usersAnalyses).doc(analyse.uid).delete();
+      } catch (error) {
+        print(error.toString());
+      }
+    }
   }
 
   Future _saveAnalyseLocally(Analyse analyse) async {
@@ -118,6 +126,20 @@ class DatabaseService {
     }
   }
 
+  Future _saveAnalyseFirebase(Analyse analyse) async {
+    try {
+      analyse.imageUrl = await StorageService.uploadFile(userUid + "/" + analyse.uid, File(analyse.imageUrl));
+      return _usersDataCollection
+          .doc(userUid)
+          .collection(DatabasePath.usersAnalyses)
+          .doc(analyse.uid)
+          .set(analyse.toJson());
+    } catch (error) {
+      print(error.toString());
+    }
+    return null;
+  }
+
   Future<List<Analyse>> _loadLocalAnalyses() async {
     Directory appDocDirectory = await getApplicationDocumentsDirectory();
     Database db = await _storageLocal.openDatabase(appDocDirectory.path + "/pa8");
@@ -129,6 +151,15 @@ class DatabaseService {
       analyses.add(Analyse.fromJson(element.value));
     });
     analyses.sort((a, b) => b.date.compareTo(a.date));
+    return analyses;
+  }
+
+  Future<List<Analyse>> _loadFirebaseAnalyses() async {
+    QuerySnapshot q = await _usersDataCollection.doc(userUid).collection(DatabasePath.usersAnalyses).get();
+    List<Analyse> analyses = [];
+    q.docs.forEach((element) {
+      analyses.add(new Analyse.fromFireStoreCollection(element.id, element.data()));
+    });
     return analyses;
   }
 
@@ -150,5 +181,29 @@ class DatabaseService {
     localAnalyses.forEach((element) => keys.add(element.uid));
 
     return store.records(keys).delete(db);
+  }
+
+  Future syncDatabases() async {
+    List<Analyse> localAnalyses = await _loadLocalAnalyses();
+    List<Analyse> firebaseAnalyses = await _loadLocalAnalyses();
+    Map<String, Analyse> both = new Map();
+
+    localAnalyses.forEach((element) {
+      if (!both.keys.contains(element.uid)) {
+        both[element.uid] = element;
+      }
+    });
+
+    firebaseAnalyses.forEach((element) {
+      if (!both.keys.contains(element.uid)) {
+        both[element.uid] = element;
+      }
+    });
+
+    both.values.forEach((element) async {
+      await saveAnalyse(element);
+    });
+
+    return null;
   }
 }

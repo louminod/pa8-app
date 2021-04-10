@@ -10,7 +10,6 @@ import 'package:pa8/screens/home/widgets/lastAnalysesWidget.dart';
 import 'package:pa8/screens/home/widgets/reminderWidget.dart';
 import 'package:pa8/services/AuthenticationService.dart';
 import 'package:pa8/services/DatabaseService.dart';
-import 'package:pa8/services/StorageService.dart';
 import 'package:pa8/widgets/Loading.dart';
 import 'package:provider/provider.dart';
 
@@ -39,29 +38,51 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _home(UserData user) {
+    return user == null ? _userNotConnected() : _userConnected(user);
+  }
+
+  Widget _userNotConnected() {
     return FutureBuilder(
-      future: DatabaseService(userUid: user == null ? "" : user.uid).analyses,
+      future: DatabaseService(userUid: "").analysesFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           List<Analyse> analyses = snapshot.data;
-          return Scaffold(
-            appBar: AppBar(
-              title: user == null ? Text("PA8") : Text(user.userName),
-              centerTitle: true,
-              actions: <Widget>[_actionAppBar(user)],
-            ),
-            body: Column(
-              children: [
-                ReminderWidget(user, analyses, _picker),
-                LastAnalysesWidget(user, analyses),
-              ],
-            ),
-            floatingActionButton: _floatingAnalyseButton(user),
-          );
+          return _homeScaffold(null, analyses);
         } else {
-          return LoadingWidget();
+          return LoadingScaffold();
         }
       },
+    );
+  }
+
+  Widget _userConnected(UserData user) {
+    return StreamBuilder(
+      stream: DatabaseService(userUid: user.uid).analysesStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          List<Analyse> analyses = snapshot.data;
+          return _homeScaffold(user, analyses);
+        } else {
+          return LoadingScaffold();
+        }
+      },
+    );
+  }
+
+  Widget _homeScaffold(UserData user, List<Analyse> analyses) {
+    return Scaffold(
+      appBar: AppBar(
+        title: user == null ? Text("PA8") : Text(user.userName),
+        centerTitle: true,
+        actions: <Widget>[_actionAppBar(user)],
+      ),
+      body: Column(
+        children: [
+          ReminderWidget(user, analyses, _picker),
+          LastAnalysesWidget(user, analyses),
+        ],
+      ),
+      floatingActionButton: _floatingAnalyseButton(user),
     );
   }
 
