@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           loading = true;
         });
-        final pickedFile = await _picker.getImage(source: ImageSource.camera);
+        final pickedFile = await _picker.getImage(source: ImageSource.gallery);
         if (pickedFile != null) {
           Navigator.push(
               context,

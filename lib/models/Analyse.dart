@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pa8/models/references/MoleType.dart';
 import 'package:pa8/tools/converter.dart';
@@ -5,6 +7,7 @@ import 'package:pa8/tools/converter.dart';
 class Analyse {
   String uid;
   String imageUrl;
+  Uint8List bytes;
   DateTime date;
   MoleType moleType;
   int risk;

@@ -38,7 +38,7 @@ class LastAnalysesWidget extends StatelessWidget {
                           child: Container(
                             margin: EdgeInsets.symmetric(vertical: 5),
                             child: ListTile(
-                              leading: analyse.imageUrl.contains("emulated")
+                              leading: analyse.imageUrl.contains("emulated") || analyse.imageUrl.contains("data")
                                   ? Image.file(File(analyse.imageUrl))
                                   : Image.network(analyse.imageUrl),
                               title: Text(analyse.title),

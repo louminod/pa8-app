@@ -47,9 +47,11 @@ class AnalyseScreen extends StatelessWidget {
               margin: EdgeInsets.all(10),
               child: Card(
                 elevation: 5,
-                child: analyse.imageUrl.contains("emulated")
-                    ? Image.file(File(analyse.imageUrl))
-                    : Image.network(analyse.imageUrl),
+                child: analyse.bytes != null
+                    ? Image.memory(analyse.bytes)
+                    : analyse.imageUrl.contains("emulated") || analyse.imageUrl.contains("data")
+                        ? Image.file(File(analyse.imageUrl))
+                        : Image.network(analyse.imageUrl),
               ),
             ),
             Row(

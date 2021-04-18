@@ -53,6 +53,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 5),
             Text(user.userName, style: TextStyle(fontSize: 20)),
+            SizedBox(height: 15),
+            ElevatedButton(
+              onPressed: () {},
+              child: Text("Je suis dermatologue"),
+            ),
           ],
         ),
       ),

@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/models/references/MoleType.dart';
 import 'package:pa8/utils/constants.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 abstract class ApiService {
   static Future<dynamic> get() async {
@@ -40,16 +44,29 @@ abstract class ApiService {
         case "MALIGNANT":
           analyse.moleType = MoleType.MALIGNANT;
           break;
-        case "UNKNOWN":
-          analyse.moleType = MoleType.UNKNOWN;
+        case "NOTHING":
+          analyse.moleType = MoleType.NOTHING;
+          break;
+        case "MULTIPLE":
+          analyse.moleType = MoleType.MULTIPLE;
           break;
         default:
-          analyse.moleType = MoleType.UNKNOWN;
+          analyse.moleType = MoleType.NOTHING;
           break;
       }
-      analyse.moleType = MoleType.BENIGN;
       analyse.date = DateTime.now();
-      analyse.imageUrl = image.path;
+
+      String img = (data["img"] as String).replaceAll("[", "").replaceAll("]", "");
+
+      List<int> bytes = [];
+      img.split(", ").forEach((number) => bytes.add(int.parse(number)));
+
+      String tempPath = (await getApplicationDocumentsDirectory()).path;
+      File file = File('$tempPath/${Uuid().v4()}.png');
+      file.writeAsBytesSync(bytes);
+
+      analyse.bytes = file.readAsBytesSync();
+      analyse.imageUrl = file.path;
 
       return analyse;
     } catch (error) {
