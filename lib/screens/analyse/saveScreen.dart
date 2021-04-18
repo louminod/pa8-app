@@ -6,6 +6,7 @@ import 'package:pa8/models/User.dart';
 import 'package:pa8/routes/routes.dart';
 import 'package:pa8/services/DatabaseService.dart';
 import 'package:pa8/widgets/Loading.dart';
+import 'package:uuid/uuid.dart';
 
 class SaveScreen extends StatefulWidget {
   final Analyse analyse;
@@ -41,8 +42,7 @@ class _SaveScreenState extends State<SaveScreen> {
                   child: Column(
                     children: <Widget>[
                       Card(
-                        child:
-                            Image.file(File(widget.analyse.imageUrl), height: MediaQuery.of(context).size.height / 2.5),
+                        child: Image.file(File(widget.analyse.imageUrl), height: MediaQuery.of(context).size.height / 2.5),
                         elevation: 5,
                       ),
                       SizedBox(height: 10),
@@ -106,14 +106,16 @@ class _SaveScreenState extends State<SaveScreen> {
                                   loading = true;
                                 });
 
-                                if (widget.lastAnalyse != null) {
-                                  widget.lastAnalyse.reminder = null;
-                                  await DatabaseService(userUid: widget.user == null ? "" : widget.user.uid)
-                                      .updateAnalyse(widget.lastAnalyse);
+                                if (widget.analyse.uid == null) {
+                                  widget.analyse.uid = Uuid().v4();
                                 }
 
-                                await DatabaseService(userUid: widget.user == null ? "" : widget.user.uid)
-                                    .saveAnalyse(widget.analyse);
+                                if (widget.lastAnalyse != null) {
+                                  widget.lastAnalyse.reminder = null;
+                                  await DatabaseService(userUid: widget.user == null ? "" : widget.user.uid).updateAnalyse(widget.lastAnalyse);
+                                }
+
+                                await DatabaseService(userUid: widget.user == null ? "" : widget.user.uid).saveAnalyse(widget.analyse);
 
                                 setState(() {
                                   loading = false;
@@ -122,8 +124,7 @@ class _SaveScreenState extends State<SaveScreen> {
                                   content: Text('Analyse sauvegardée !'),
                                   duration: Duration(seconds: 1),
                                 ));
-                                Navigator.pushNamedAndRemoveUntil(
-                                    context, Routes.home, (Route<dynamic> route) => false);
+                                Navigator.pushNamedAndRemoveUntil(context, Routes.home, (Route<dynamic> route) => false);
                               }
                             },
                             child: Text('Valider'),

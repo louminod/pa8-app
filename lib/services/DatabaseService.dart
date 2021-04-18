@@ -24,10 +24,7 @@ class DatabaseService {
 
   Stream<UserData> get userData {
     if (this.userUid != "") {
-      return _usersDataCollection
-          .doc(userUid)
-          .snapshots()
-          .map((snapshot) => UserData.fromFireStoreCollection(snapshot.id, snapshot.data()));
+      return _usersDataCollection.doc(userUid).snapshots().map((snapshot) => UserData.fromFireStoreCollection(snapshot.id, snapshot.data()));
     } else {
       return null;
     }
@@ -55,7 +52,7 @@ class DatabaseService {
   // ANALYSES
 
   Future<List<Analyse>> get analysesFuture async {
-      return _loadLocalAnalyses();
+    return _loadLocalAnalyses();
   }
 
   Stream<List<Analyse>> get analysesStream => _usersDataCollection
@@ -80,11 +77,7 @@ class DatabaseService {
     await store.record(analyse.uid).update(db, analyse.toJson());
     if (this.userUid != "") {
       try {
-        _usersDataCollection
-            .doc(userUid)
-            .collection(DatabasePath.usersAnalyses)
-            .doc(analyse.uid)
-            .update(analyse.toJson());
+        _usersDataCollection.doc(userUid).collection(DatabasePath.usersAnalyses).doc(analyse.uid).update(analyse.toJson());
       } catch (error) {
         print(error.toString());
       }
@@ -129,13 +122,9 @@ class DatabaseService {
   Future _saveAnalyseFirebase(Analyse analyse) async {
     try {
       analyse.imageUrl = await StorageService.uploadFile(userUid + "/" + analyse.uid, File(analyse.imageUrl));
-      return _usersDataCollection
-          .doc(userUid)
-          .collection(DatabasePath.usersAnalyses)
-          .doc(analyse.uid)
-          .set(analyse.toJson());
+      return _usersDataCollection.doc(userUid).collection(DatabasePath.usersAnalyses).doc(analyse.uid).set(analyse.toJson());
     } catch (error) {
-      print(error.toString());
+      print("ERROR -> _saveAnalyseFirebase -> " + error.toString());
     }
     return null;
   }
@@ -200,9 +189,9 @@ class DatabaseService {
       }
     });
 
-    both.values.forEach((element) async {
-      await saveAnalyse(element);
-    });
+    for (Analyse analyse in both.values) {
+      await saveAnalyse(analyse);
+    }
 
     return null;
   }
