@@ -22,9 +22,32 @@ class DatabaseService {
 
   // USERDATA
 
-  Stream<UserData> get userData {
+  Stream<UserData> get userDataStream {
     if (this.userUid != "") {
       return _usersDataCollection.doc(userUid).snapshots().map((snapshot) => UserData.fromFireStoreCollection(snapshot.id, snapshot.data()));
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<UserData>> get listUserDataFuture async {
+    List<UserData> users = [];
+
+    QuerySnapshot snapshot = await _usersDataCollection.get();
+    snapshot.docs.forEach((doc) {
+      if (doc.exists) {
+        users.add(UserData.fromFireStoreCollection(doc.id, doc.data()));
+      }
+    });
+
+    return users;
+  }
+
+  Future<UserData> get userDataFuture async {
+    DocumentSnapshot snapshot = await _usersDataCollection.doc(userUid).get();
+    if (snapshot.exists) {
+      var data = snapshot.data();
+      return UserData.fromFireStoreCollection(snapshot.id, data);
     } else {
       return null;
     }

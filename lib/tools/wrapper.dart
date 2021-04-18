@@ -17,7 +17,7 @@ abstract class Wrapper {
             userUid = userFirebaseSnapshot.data.uid;
           }
           return StreamProvider<UserData>.value(
-            value: DatabaseService(userUid: userUid).userData,
+            value: DatabaseService(userUid: userUid).userDataStream,
             initialData: null,
             child: page,
           );

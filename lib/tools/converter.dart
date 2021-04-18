@@ -32,4 +32,13 @@ abstract class Converter {
     }
     return result;
   }
+
+  static List<String> convertListDynamicToListString(List<dynamic> listeDynamic) {
+    if (listeDynamic == null) {
+      return null;
+    }
+    List<String> list = [];
+    listeDynamic.forEach((element) => list.add(element as String));
+    return list;
+  }
 }

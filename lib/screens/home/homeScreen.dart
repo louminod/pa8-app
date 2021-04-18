@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
+import 'package:pa8/models/references/UserType.dart';
 import 'package:pa8/routes/routes.dart';
 import 'package:pa8/screens/analyse/local/analyseMaker.dart';
 import 'package:pa8/screens/home/widgets/lastAnalysesWidget.dart';
@@ -34,11 +35,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext _context) {
     UserData user = Provider.of<UserData>(context);
-    return loading ? LoadingScaffold() : _home(user);
-  }
+    if (loading) {
+      return LoadingScaffold();
+    }
 
-  Widget _home(UserData user) {
-    return user == null ? _userNotConnected() : _userConnected(user);
+    if (user == null) {
+      return _userNotConnected();
+    }
+
+    if (user.userType == UserType.CLIENT) {
+      return _userConnected(user);
+    }
+
+    if (user.userType == UserType.DOCTOR) {
+      return _doctor(user);
+    }
   }
 
   Widget _userNotConnected() {
@@ -69,13 +80,69 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _doctor(UserData user) {
+    final _formKey = GlobalKey<FormState>();
+    String code;
+    return Scaffold(
+      appBar: _appBar(user),
+      body: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
+            child: Card(
+              elevation: 5,
+              child: Container(
+                margin: EdgeInsets.all(10),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.person_add),
+                          hintText: 'Code client',
+                          labelText: 'Code',
+                        ),
+                        onChanged: (value) {
+                          code = value;
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Entrez un code';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState.validate()) {
+                              List<UserData> users = await DatabaseService(userUid: user.uid).listUserDataFuture;
+                              users.forEach((element) {
+                                if (element.code == code) {
+                                  if (user.patientUids == null) {
+                                    user.patientUids = [element.uid];
+                                  }
+                                }
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Patient ajouté !')));
+                            }
+                          },
+                          child: Text("Ajouter"))
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _homeScaffold(UserData user, List<Analyse> analyses) {
     return Scaffold(
-      appBar: AppBar(
-        title: user == null ? Text("PA8") : Text(user.userName),
-        centerTitle: true,
-        actions: <Widget>[_actionAppBar(user)],
-      ),
+      appBar: _appBar(user),
       body: Column(
         children: [
           ReminderWidget(user, analyses, _picker),
@@ -128,6 +195,14 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Icon(Icons.camera_alt),
       backgroundColor: Colors.blue,
+    );
+  }
+
+  Widget _appBar(UserData user) {
+    return AppBar(
+      title: user == null ? Text("PA8") : Text(user.userName),
+      centerTitle: true,
+      actions: <Widget>[_actionAppBar(user)],
     );
   }
 }
