@@ -54,11 +54,16 @@ class DatabaseService {
   }
 
   Future<void> createUserData(UserData userData) async {
-    final snapShot = await _usersDataCollection.doc(userData.uid).get();
+    try {
+      final snapShot = await _usersDataCollection.doc(userData.uid).get();
 
-    if (snapShot == null || !snapShot.exists) {
-      _usersDataCollection.doc(userData.uid).set(userData.toJson());
+      if (snapShot == null || !snapShot.exists) {
+        return _usersDataCollection.doc(userData.uid).set(userData.toJson());
+      }
+    } catch (error) {
+      print("ERROR -> createUserData -> ${error.toString()}");
     }
+    return null;
   }
 
   Future<void> updateUserData(UserData userData) {

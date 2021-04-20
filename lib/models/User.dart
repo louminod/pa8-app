@@ -50,7 +50,7 @@ class UserData {
         'userName': this.userName,
         'email': this.email,
         'profilePicture': this.profilePicture,
-        'userType': this.userType == null ? UserType.CLIENT : this.userType.toString(),
+        'userType': this.userType == null ? UserType.CLIENT.toString() : this.userType.toString(),
         'accountType': this.accountType.toString(),
         'code': this.code ?? Uuid().v4().split("-")[0],
         'patientUids': this.patientUids,

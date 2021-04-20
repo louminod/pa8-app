@@ -9,6 +9,7 @@ import 'package:pa8/routes/routes.dart';
 import 'package:pa8/screens/analyse/local/analyseMaker.dart';
 import 'package:pa8/screens/home/widgets/lastAnalysesWidget.dart';
 import 'package:pa8/screens/home/widgets/reminderWidget.dart';
+import 'package:pa8/screens/patient/patientScreen.dart';
 import 'package:pa8/services/AuthenticationService.dart';
 import 'package:pa8/services/DatabaseService.dart';
 import 'package:pa8/widgets/Loading.dart';
@@ -50,6 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (user.userType == UserType.DOCTOR) {
       return _doctor(user);
     }
+    //AuthenticationService.signOut();
+    return Scaffold();
   }
 
   Widget _userNotConnected() {
@@ -88,44 +91,57 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
+            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             child: Card(
               elevation: 5,
               child: Container(
-                margin: EdgeInsets.all(10),
+                margin: EdgeInsets.all(5),
                 child: Form(
                   key: _formKey,
-                  child: Column(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.person_add),
-                          hintText: 'Code client',
-                          labelText: 'Code',
+                      Container(
+                        width: 200,
+                        margin: EdgeInsets.only(bottom: 5),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            icon: Icon(Icons.person_add),
+                            hintText: 'Code client',
+                            labelText: 'Code',
+                          ),
+                          onChanged: (value) {
+                            code = value;
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Entrez un code';
+                            }
+                            return null;
+                          },
                         ),
-                        onChanged: (value) {
-                          code = value;
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Entrez un code';
-                          }
-                          return null;
-                        },
                       ),
-                      SizedBox(height: 20),
                       ElevatedButton(
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               List<UserData> users = await DatabaseService(userUid: user.uid).listUserDataFuture;
-                              users.forEach((element) {
+                              bool found = false;
+                              users.forEach((element) async {
                                 if (element.code == code) {
                                   if (user.patientUids == null) {
                                     user.patientUids = [element.uid];
+                                  } else {
+                                    user.patientUids.add(element.uid);
                                   }
+                                  await DatabaseService(userUid: user.uid).updateUserData(user);
+                                  found = true;
                                 }
                               });
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Patient ajouté !')));
+                              if (found) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Patient ajouté !')));
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Ce code n'est pas associé !")));
+                              }
                             }
                           },
                           child: Text("Ajouter"))
@@ -135,6 +151,48 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          Divider(
+            indent: 15,
+            endIndent: 15,
+          ),
+          if (user.patientUids != null)
+            Container(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: user.patientUids.length,
+                itemBuilder: (context, index) {
+                  String patientUid = user.patientUids[index];
+                  return StreamBuilder(
+                    stream: DatabaseService(userUid: patientUid).userDataStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        UserData patient = snapshot.data;
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => PatientScreen(user: user, patient: patient)));
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(5),
+                            child: Card(
+                              elevation: 3,
+                              child: ListTile(
+                                leading: Container(
+                                  margin: EdgeInsets.all(10),
+                                  child: Image.network(patient.profilePicture),
+                                ),
+                                title: Text(patient.userName),
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return LoadingWidget();
+                      }
+                    },
+                  );
+                },
+              ),
+            )
         ],
       ),
     );

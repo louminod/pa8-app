@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pa8/models/User.dart';
 import 'package:pa8/services/DatabaseService.dart';
+
 abstract class AuthenticationService {
   static FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -10,6 +11,7 @@ abstract class AuthenticationService {
   }
 
   static Future<void> signOut() async {
+    await GoogleSignIn().signOut();
     await _firebaseAuth.signOut();
   }
 
@@ -18,19 +20,28 @@ abstract class AuthenticationService {
   }
 
   static Future<void> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
       );
 
-      final User user = await signInWithCredential(credential);
-      await DatabaseService(userUid: user.uid).createUserData(UserData.extractDataFromFirebaseUser(user));
-      await DatabaseService(userUid: user.uid).syncDatabases();
-    } catch (error) {
-      print(error);
+      try {
+        final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
+        User user = userCredential.user;
+        UserData userData = UserData.extractDataFromFirebaseUser(user);
+        await DatabaseService(userUid: userData.uid).createUserData(userData);
+        //await DatabaseService(userUid: user.uid).syncDatabases();
+      } catch (error) {
+        print("ERROR -> signInWithGoogle -> " + error.toString());
+      }
     }
+
+    return null;
   }
 }
