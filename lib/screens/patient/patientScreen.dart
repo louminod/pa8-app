@@ -37,13 +37,13 @@ class PatientScreen extends StatelessWidget {
                   Color color = Colors.white;
                   switch (analyse.moleType) {
                     case MoleType.BENIGN:
-                      color = Colors.green[300];
+                      color = Colors.green;
                       break;
                     case MoleType.MALIGNANT:
                       color = Colors.redAccent;
                       break;
                     default:
-                      color = Colors.white;
+                      color = Colors.grey;
                       break;
                   }
                   return GestureDetector(
@@ -61,13 +61,13 @@ class PatientScreen extends StatelessWidget {
                             leading: analyse.imageUrl.contains("emulated") || analyse.imageUrl.contains("data")
                                 ? Image.file(File(analyse.imageUrl))
                                 : Image.network(analyse.imageUrl),
-                            title: Text(analyse.title),
+                            title: Text(analyse.title, style: TextStyle(color: Colors.white)),
                             subtitle: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(Formater.formatDateTime(analyse.date)),
-                                Text("${analyse.moleType.toString().split('.')[1]} | ${analyse.risk} %"),
+                                Text(Formater.formatDateTime(analyse.date), style: TextStyle(color: Colors.white)),
+                                Text("${analyse.moleType.toString().split('.')[1]} | ${analyse.risk} %", style: TextStyle(color: Colors.white)),
                               ],
                             ),
                           ),

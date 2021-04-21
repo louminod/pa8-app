@@ -205,21 +205,9 @@ class DatabaseService {
     List<Analyse> firebaseAnalyses = await _loadLocalAnalyses();
     Map<String, Analyse> both = new Map();
 
-    localAnalyses.forEach((element) {
-      if (!both.keys.contains(element.uid)) {
-        both[element.uid] = element;
-      }
-    });
-
-    firebaseAnalyses.forEach((element) {
-      if (!both.keys.contains(element.uid)) {
-        both[element.uid] = element;
-      }
-    });
-
-    for (Analyse analyse in both.values) {
+    localAnalyses.forEach((analyse) async {
       await saveAnalyse(analyse);
-    }
+    });
 
     return null;
   }

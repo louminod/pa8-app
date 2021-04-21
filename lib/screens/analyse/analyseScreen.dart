@@ -5,6 +5,7 @@ import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pa8/models/Analyse.dart';
 import 'package:pa8/models/User.dart';
+import 'package:pa8/models/references/UserType.dart';
 import 'package:pa8/routes/routes.dart';
 import 'package:pa8/screens/analyse/saveScreen.dart';
 import 'package:pa8/services/DatabaseService.dart';
@@ -22,23 +23,25 @@ class AnalyseScreen extends StatelessWidget {
   Widget build(BuildContext _context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.alarm),
-            onPressed: () async {
-              _reminderModal(_context);
-            },
-          ),
-          analyse.title == null
-              ? Container()
-              : IconButton(
-                  icon: const Icon(Icons.delete),
+        actions: user.userType == UserType.CLIENT
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.alarm),
                   onPressed: () async {
-                    await DatabaseService(userUid: user == null ? "" : user.uid).deleteAnalyse(analyse);
-                    Navigator.pushNamedAndRemoveUntil(_context, Routes.home, (Route<dynamic> route) => false);
+                    _reminderModal(_context);
                   },
                 ),
-        ],
+                analyse.title == null
+                    ? Container()
+                    : IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () async {
+                          await DatabaseService(userUid: user == null ? "" : user.uid).deleteAnalyse(analyse);
+                          Navigator.pushNamedAndRemoveUntil(_context, Routes.home, (Route<dynamic> route) => false);
+                        },
+                      ),
+              ]
+            : [],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -54,23 +57,33 @@ class AnalyseScreen extends StatelessWidget {
                         : Image.network(analyse.imageUrl),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  analyse.moleType.toString().split(".")[1],
-                  style: TextStyle(color: Colors.grey, fontSize: 30),
-                ),
-                Text(
-                  "|",
-                  style: TextStyle(color: Colors.grey, fontSize: 30),
-                ),
-                Text(
-                  "${analyse.risk} %",
-                  style: TextStyle(color: Colors.grey, fontSize: 30),
-                ),
-              ],
-            ),
+            analyse.risk >= 0
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        analyse.moleType.toString().split(".")[1],
+                        style: TextStyle(color: Colors.grey, fontSize: 30),
+                      ),
+                      Text(
+                        "|",
+                        style: TextStyle(color: Colors.grey, fontSize: 30),
+                      ),
+                      Text(
+                        "${analyse.risk} %",
+                        style: TextStyle(color: Colors.grey, fontSize: 30),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        "La photo n'a pas pu être analysée (erreur : ${analyse.moleType.toString().split(".")[1]})",
+                        style: TextStyle(color: Colors.grey, fontSize: 30),
+                      ),
+                    ],
+                  ),
             analyse.title != null
                 ? Text(
                     analyse.title,
@@ -82,21 +95,23 @@ class AnalyseScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          Navigator.push(
-            _context,
-            MaterialPageRoute(
-              builder: (_context) => SaveScreen(
-                analyse: analyse,
-                user: user,
-              ),
-            ),
-          );
-        },
-        child: Icon(analyse.title == null ? Icons.save : Icons.edit),
-        backgroundColor: Colors.blue,
-      ),
+      floatingActionButton: user.userType == UserType.CLIENT
+          ? FloatingActionButton(
+              onPressed: () async {
+                Navigator.push(
+                  _context,
+                  MaterialPageRoute(
+                    builder: (_context) => SaveScreen(
+                      analyse: analyse,
+                      user: user,
+                    ),
+                  ),
+                );
+              },
+              child: Icon(analyse.title == null ? Icons.save : Icons.edit),
+              backgroundColor: Colors.blue,
+            )
+          : null,
     );
   }
 

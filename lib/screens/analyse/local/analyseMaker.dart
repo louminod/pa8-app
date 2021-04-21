@@ -28,7 +28,24 @@ class AnalyseMaker extends StatelessWidget {
             return ErrorScaffold(text: "Analyse impossible");
           }
         } else {
-          return LoadingScaffold();
+          return Scaffold(
+            body: Container(
+              color: Color(0xff00364B),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/images/wip.gif",
+                      fit: BoxFit.fitHeight,
+                    ),
+                    Text("Analyse en cours...", style: TextStyle(color: Colors.white,fontSize: 20)),
+                  ],
+                ),
+              ),
+            ),
+          );
         }
       },
     );
