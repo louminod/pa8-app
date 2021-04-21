@@ -92,7 +92,7 @@ class DatabaseService {
   Future<void> saveAnalyse(Analyse analyse) async {
     _saveAnalyseLocally(analyse);
     if (this.userUid != "") {
-      _saveAnalyseFirebase(analyse);
+      await _saveAnalyseFirebase(analyse);
     }
     return null;
   }

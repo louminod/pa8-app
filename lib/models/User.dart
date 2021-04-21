@@ -22,6 +22,7 @@ class UserData {
       this.userName = firebaseUser.displayName;
       this.email = firebaseUser.email;
       this.profilePicture = firebaseUser.photoURL;
+      this.userType = UserType.CLIENT;
     } catch (error) {
       print("ERROR -> UserData.extractDataFromFirebaseUser -> " + error.toString());
     }

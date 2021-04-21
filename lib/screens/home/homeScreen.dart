@@ -258,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _appBar(UserData user) {
     return AppBar(
-      title: user == null ? Text("PA8") : Text(user.userName),
+      title: user == null ? Text("POTECT") : Text(user.userName),
       centerTitle: true,
       actions: <Widget>[_actionAppBar(user)],
     );

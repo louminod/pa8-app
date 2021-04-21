@@ -23,7 +23,7 @@ class AnalyseScreen extends StatelessWidget {
   Widget build(BuildContext _context) {
     return Scaffold(
       appBar: AppBar(
-        actions: user.userType == UserType.CLIENT
+        actions: user == null || user.userType == UserType.CLIENT
             ? [
                 IconButton(
                   icon: const Icon(Icons.alarm),
@@ -80,7 +80,7 @@ class AnalyseScreen extends StatelessWidget {
                     children: [
                       Text(
                         "La photo n'a pas pu être analysée (erreur : ${analyse.moleType.toString().split(".")[1]})",
-                        style: TextStyle(color: Colors.grey, fontSize: 30),
+                        style: TextStyle(color: Colors.grey),
                       ),
                     ],
                   ),
@@ -95,7 +95,7 @@ class AnalyseScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: user.userType == UserType.CLIENT
+      floatingActionButton: user == null || user.userType == UserType.CLIENT
           ? FloatingActionButton(
               onPressed: () async {
                 Navigator.push(

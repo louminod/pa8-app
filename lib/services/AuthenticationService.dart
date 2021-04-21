@@ -37,8 +37,9 @@ abstract class AuthenticationService {
         User user = userCredential.user;
         UserData userData = UserData.extractDataFromFirebaseUser(user);
         await DatabaseService(userUid: userData.uid).createUserData(userData);
+        print(userData.userType);
         if (userData.userType == UserType.CLIENT) {
-          await DatabaseService(userUid: user.uid).syncDatabases();
+          await DatabaseService(userUid: userData.uid).syncDatabases();
         }
       } catch (error) {
         print("ERROR -> signInWithGoogle -> " + error.toString());
